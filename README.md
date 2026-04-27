@@ -17,14 +17,25 @@ Mỗi đội thi sẽ được cung cấp 1 bộ kit phần cứng và sử dụ
 
 ## Về VEX Technology Solutions
 
-**VEX Technology Solutions** là đơn vị bảo trợ chuyên môn cho giải đấu Lê Lợi Robotics Challenge 2026. Với sứ mệnh truyền cảm hứng STEM cho thế hệ trẻ, VEX Technology Solutions chịu trách nhiệm:
+**VEX Technology Solutions** là đơn vị bảo trợ chuyên môn cho giải đấu **Lê Lợi Robotics Challenge 2026**.
+
+VEX TECHNOLOGY SOLUTIONS là doanh nghiệp hoạt động trong lĩnh vực công nghệ, tập trung phát triển phần mềm và xây dựng các giải pháp chuyển đổi số nhằm tối ưu hoá vận hành và nâng cao hiệu quả cho doanh nghiệp. Được xây dựng bởi đội ngũ trẻ, năng động với nền tảng kỹ thuật vững chắc, VEX không ngừng nghiên cứu, phát triển và triển khai các sản phẩm có tính ứng dụng cao, linh hoạt và dễ mở rộng theo nhu cầu thực tế. Bên cạnh đó, công ty hướng tới việc xây dựng một hệ sinh thái công nghệ hiện đại, nơi các giải pháp được kết nối và tối ưu một cách toàn diện. Với định hướng phát triển bền vững, VEX không chỉ chú trọng vào chất lượng sản phẩm mà còn đề cao môi trường làm việc sáng tạo, chủ động và liên tục đổi mới, tạo điều kiện để mỗi cá nhân phát triển năng lực và đóng góp giá trị lâu dài.
+
+Trong khuôn khổ giải đấu, VEX Technology Solutions chịu trách nhiệm:
 
 - Thiết kế bộ kit phần cứng và phần mềm điều khiển robot
 - Xây dựng tài liệu kỹ thuật và hướng dẫn cho các đội thi
 - Hỗ trợ kỹ thuật trong suốt quá trình luyện tập và thi đấu
 - Đảm bảo hệ thống WiFi hoạt động ổn định, không nhiễu giữa các robot
 
-**Liên hệ:** Anh Tuan Le — Founder, VEX Technology Solutions
+### Liên hệ
+
+| Kênh | Thông tin |
+|------|-----------|
+| Email | [contact.vextech@gmail.com](mailto:contact.vextech@gmail.com) |
+| Facebook | [VEX Technology Solutions](https://www.facebook.com/vex.technology.solutions) |
+| Zalo OA | [VEX Technology Solutions](https://zalo.me/12830199311181452) |
+| LinkedIn | [VEX Technology Solutions](https://www.linkedin.com/company/vextechnologysolutions) |
 
 ---
 
