@@ -1,0 +1,24 @@
+# Build
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+
+# Arduino IDE
+build/
+.arduino/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
