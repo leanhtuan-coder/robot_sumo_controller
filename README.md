@@ -56,72 +56,64 @@ Trong khuôn khổ giải đấu, VEX Technology Solutions chịu trách nhiệm
 
 ### ESP32 → L298N #1 (Bên TRÁI)
 
-```
-ESP32 Pin    →    L298N #1 Pin    →    Motor
-─────────────────────────────────────────────
-GPIO 25      →    ENA             →    Tốc độ Trước-Trái (PWM)
-GPIO 26      →    IN1             →    Chiều quay Trước-Trái
-GPIO 27      →    IN2             →    Chiều quay Trước-Trái
-GPIO 14      →    ENB             →    Tốc độ Sau-Trái (PWM)
-GPIO 13      →    IN3             →    Chiều quay Sau-Trái
-GPIO 5       →    IN4             →    Chiều quay Sau-Trái
-```
+| ESP32 Pin | L298N #1 Pin | Chức năng |
+|-----------|-------------|-----------|
+| GPIO 25 | ENA | Tốc độ Trước-Trái (PWM) |
+| GPIO 26 | IN1 | Chiều quay Trước-Trái |
+| GPIO 27 | IN2 | Chiều quay Trước-Trái |
+| GPIO 14 | ENB | Tốc độ Sau-Trái (PWM) |
+| GPIO 13 | IN3 | Chiều quay Sau-Trái |
+| GPIO 5 | IN4 | Chiều quay Sau-Trái |
 
 ### ESP32 → L298N #2 (Bên PHẢI)
 
-```
-ESP32 Pin    →    L298N #2 Pin    →    Motor
-─────────────────────────────────────────────
-GPIO 32      →    ENA             →    Tốc độ Trước-Phải (PWM)
-GPIO 33      →    IN1             →    Chiều quay Trước-Phải
-GPIO 23      →    IN2             →    Chiều quay Trước-Phải
-GPIO 19      →    ENB             →    Tốc độ Sau-Phải (PWM)
-GPIO 18      →    IN3             →    Chiều quay Sau-Phải
-GPIO 4       →    IN4             →    Chiều quay Sau-Phải
-```
+| ESP32 Pin | L298N #2 Pin | Chức năng |
+|-----------|-------------|-----------|
+| GPIO 32 | ENA | Tốc độ Trước-Phải (PWM) |
+| GPIO 33 | IN1 | Chiều quay Trước-Phải |
+| GPIO 23 | IN2 | Chiều quay Trước-Phải |
+| GPIO 19 | ENB | Tốc độ Sau-Phải (PWM) |
+| GPIO 18 | IN3 | Chiều quay Sau-Phải |
+| GPIO 4 | IN4 | Chiều quay Sau-Phải |
 
 ### Nguồn điện
 
-```
-Pin 18650 (2 viên nối tiếp = 7.4V)
-    │
-    ├── (+) ──→ L298N #1 VCC (12V input)
-    ├── (+) ──→ L298N #2 VCC (12V input)
-    │
-    ├── (–) ──→ L298N #1 GND
-    ├── (–) ──→ L298N #2 GND
-    └── (–) ──→ ESP32 GND
-
-L298N #1 (5V output) ──→ ESP32 VIN (cấp nguồn cho ESP32)
-```
+| Từ | Đến | Ghi chú |
+|----|-----|---------|
+| Pin 18650 (+) | L298N #1 VCC | Nguồn 7.4V |
+| Pin 18650 (+) | L298N #2 VCC | Nguồn 7.4V |
+| Pin 18650 (–) | L298N #1 GND | GND chung |
+| Pin 18650 (–) | L298N #2 GND | GND chung |
+| Pin 18650 (–) | ESP32 GND | GND chung |
+| L298N #1 (5V out) | ESP32 VIN | Cấp nguồn cho ESP32 |
 
 > **LƯU Ý:** Nhớ nối GND chung giữa ESP32 và cả 2 module L298N.
 
 ### Sơ đồ tổng quan
 
-```
-                    ┌─────────────┐
-                    │    ESP32    │
-                    │   DevKit   │
-                    └──┬──┬──┬──┬┘
-                       │  │  │  │
-            ┌──────────┘  │  │  └──────────┐
-            │             │  │             │
-     ┌──────┴──────┐      │  │      ┌──────┴──────┐
-     │  L298N #1   │      │  │      │  L298N #2   │
-     │  (TRÁI)     │      │  │      │  (PHẢI)     │
-     └──┬──────┬───┘      │  │      └──┬──────┬───┘
-        │      │           │  │         │      │
-   ┌────┘  ┌───┘           │  │    ┌────┘  ┌───┘
-   │       │               │  │    │       │
- [M1]    [M2]              │  │  [M3]    [M4]
- Trước   Sau               │  │  Trước   Sau
- Trái    Trái              │  │  Phải    Phải
-                           │  │
-                    ┌──────┴──┴──────┐
-                    │  Pin 18650 x2  │
-                    │    (7.4V)      │
-                    └────────────────┘
+```mermaid
+graph TD
+    Phone["Điện thoại<br/>(WiFi + Trình duyệt)"]
+    ESP["ESP32 DevKit v1"]
+    L1["L298N #1<br/>(Bên TRÁI)"]
+    L2["L298N #2<br/>(Bên PHẢI)"]
+    BAT["Pin 18650 x2<br/>(7.4V)"]
+    M1["Motor Trước-Trái"]
+    M2["Motor Sau-Trái"]
+    M3["Motor Trước-Phải"]
+    M4["Motor Sau-Phải"]
+
+    Phone -- "WiFi AP<br/>WebSocket :81" --> ESP
+    ESP -- "GPIO 25-27, 13-14, 5" --> L1
+    ESP -- "GPIO 32-33, 23, 18-19, 4" --> L2
+    BAT -- "7.4V" --> L1
+    BAT -- "7.4V" --> L2
+    BAT -- "GND" --> ESP
+    L1 -- "5V out → VIN" --> ESP
+    L1 --> M1
+    L1 --> M2
+    L2 --> M3
+    L2 --> M4
 ```
 
 ---
