@@ -44,8 +44,9 @@ Trong khuôn khổ giải đấu, VEX Technology Solutions chịu trách nhiệm
 | Linh kiện | Số lượng | Chức năng |
 |-----------|----------|-----------|
 | ESP32 DevKit v1 (CP2102) | 1 | Bộ não điều khiển + WiFi |
-| Module L298N | 2 | Điều khiển 4 motor DC |
+| Module L298N | 2 | 1 đ/k di chuyển, 1 đ/k vũ khí |
 | Động cơ giảm tốc vàng 3-9V + bánh xe | 4 | Di chuyển |
+| Động cơ vũ khí | 2 | Tùy chọn cho vũ khí |
 | Đế pin 18650 (2 pin nối tiếp) | 1 | Nguồn 7.4V |
 | Pin 18650 | 2 | Nguồn năng lượng |
 | Dây nối đực-cái | ~20 sợi | Kết nối |
@@ -54,27 +55,31 @@ Trong khuôn khổ giải đấu, VEX Technology Solutions chịu trách nhiệm
 
 ## Sơ đồ đấu nối
 
-### ESP32 → L298N #1 (Bên TRÁI)
+### ESP32 → L298N #1 (DI CHUYỂN)
+
+> Đấu song song 2 motor TRÁI vào OUT1/OUT2, và 2 motor PHẢI vào OUT3/OUT4.
 
 | ESP32 Pin | L298N #1 Pin | Chức năng |
 |-----------|-------------|-----------|
-| GPIO 25 | ENA | Tốc độ Trước-Trái (PWM) |
-| GPIO 26 | IN1 | Chiều quay Trước-Trái |
-| GPIO 27 | IN2 | Chiều quay Trước-Trái |
-| GPIO 14 | ENB | Tốc độ Sau-Trái (PWM) |
-| GPIO 13 | IN3 | Chiều quay Sau-Trái |
-| GPIO 5 | IN4 | Chiều quay Sau-Trái |
+| GPIO 25 | ENA | Tốc độ 2 bánh Trái (PWM) |
+| GPIO 26 | IN1 | Chiều quay 2 bánh Trái |
+| GPIO 27 | IN2 | Chiều quay 2 bánh Trái |
+| GPIO 14 | ENB | Tốc độ 2 bánh Phải (PWM) |
+| GPIO 13 | IN3 | Chiều quay 2 bánh Phải |
+| GPIO 5 | IN4 | Chiều quay 2 bánh Phải |
 
-### ESP32 → L298N #2 (Bên PHẢI)
+### ESP32 → L298N #2 (VŨ KHÍ)
+
+> Vũ khí 1 đấu vào OUT1/OUT2, Vũ khí 2 đấu vào OUT3/OUT4.
 
 | ESP32 Pin | L298N #2 Pin | Chức năng |
 |-----------|-------------|-----------|
-| GPIO 32 | ENA | Tốc độ Trước-Phải (PWM) |
-| GPIO 33 | IN1 | Chiều quay Trước-Phải |
-| GPIO 23 | IN2 | Chiều quay Trước-Phải |
-| GPIO 19 | ENB | Tốc độ Sau-Phải (PWM) |
-| GPIO 18 | IN3 | Chiều quay Sau-Phải |
-| GPIO 4 | IN4 | Chiều quay Sau-Phải |
+| GPIO 32 | ENA | Tốc độ Vũ khí 1 (PWM) |
+| GPIO 33 | IN1 | Chiều quay Vũ khí 1 |
+| GPIO 23 | IN2 | Chiều quay Vũ khí 1 |
+| GPIO 19 | ENB | Tốc độ Vũ khí 2 (PWM) |
+| GPIO 18 | IN3 | Chiều quay Vũ khí 2 |
+| GPIO 4 | IN4 | Chiều quay Vũ khí 2 |
 
 ### Nguồn điện
 
@@ -95,13 +100,13 @@ Trong khuôn khổ giải đấu, VEX Technology Solutions chịu trách nhiệm
 graph TD
     Phone["Điện thoại<br/>(WiFi + Trình duyệt)"]
     ESP["ESP32 DevKit v1"]
-    L1["L298N #1<br/>(Bên TRÁI)"]
-    L2["L298N #2<br/>(Bên PHẢI)"]
+    L1["L298N #1<br/>(DI CHUYỂN)"]
+    L2["L298N #2<br/>(VŨ KHÍ)"]
     BAT["Pin 18650 x2<br/>(7.4V)"]
-    M1["Motor Trước-Trái"]
-    M2["Motor Sau-Trái"]
-    M3["Motor Trước-Phải"]
-    M4["Motor Sau-Phải"]
+    M1["2 Motor Trái"]
+    M2["2 Motor Phải"]
+    W1["Motor Vũ khí 1"]
+    W2["Motor Vũ khí 2"]
 
     Phone -- "WiFi AP<br/>WebSocket :81" --> ESP
     ESP -- "GPIO 25-27, 13-14, 5" --> L1
@@ -112,8 +117,8 @@ graph TD
     L1 -- "5V out → VIN" --> ESP
     L1 --> M1
     L1 --> M2
-    L2 --> M3
-    L2 --> M4
+    L2 --> W1
+    L2 --> W2
 ```
 
 ---
@@ -170,6 +175,7 @@ Mở file `robot_sumo_controller.ino`, đổi dòng:
 - **Kéo joystick** để di chuyển robot
 - **Lên/Xuống** = Tiến/Lùi
 - **Trái/Phải** = Rẽ trái/phải
+- **Nhấn giữ L1/R1** = Kích hoạt Vũ khí 1 / Vũ khí 2
 - **Nhấn STOP** = Dừng khẩn cấp
 
 ---
