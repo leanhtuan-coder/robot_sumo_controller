@@ -1,7 +1,9 @@
 # 🤖 Robot Sumo Battle Controller
 
 > Hệ thống điều khiển robot sumo 4WD qua WiFi bằng joystick ảo trên điện thoại.
-> Thiết kế cho cuộc thi Robotics Workshop 2026 - 7 robot húc nhau.
+> Thiết kế cho cuộc thi **Lê Lợi Robotics Challenge 2026** - 7 robot húc nhau.
+>
+> *Designed by Anh Tuan Le | VEX Technology Solutions*
 
 ---
 
