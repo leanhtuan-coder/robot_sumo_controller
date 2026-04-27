@@ -1,4 +1,4 @@
-# 🤖 Robot Sumo Battle Controller
+# Robot Sumo Battle Controller
 
 > Hệ thống điều khiển robot sumo 4WD qua WiFi bằng joystick ảo trên điện thoại.
 > Thiết kế cho cuộc thi **Lê Lợi Robotics Challenge 2026** — 7 đội, thi đấu 1v1.
@@ -7,7 +7,28 @@
 
 ---
 
-## 📦 Linh kiện mỗi robot
+## Giới thiệu
+
+Dự án cung cấp mã nguồn mở (open-source) cho hệ thống robot sumo điều khiển từ xa qua WiFi, được phát triển bởi **VEX Technology Solutions** — đơn vị bảo trợ chuyên môn của giải đấu **Lê Lợi Robotics Challenge 2026**.
+
+Mỗi đội thi sẽ được cung cấp 1 bộ kit phần cứng và sử dụng mã nguồn này để lập trình, tùy chỉnh chiến thuật cho robot của mình.
+
+---
+
+## Về VEX Technology Solutions
+
+**VEX Technology Solutions** là đơn vị bảo trợ chuyên môn cho giải đấu Lê Lợi Robotics Challenge 2026. Với sứ mệnh truyền cảm hứng STEM cho thế hệ trẻ, VEX Technology Solutions chịu trách nhiệm:
+
+- Thiết kế bộ kit phần cứng và phần mềm điều khiển robot
+- Xây dựng tài liệu kỹ thuật và hướng dẫn cho các đội thi
+- Hỗ trợ kỹ thuật trong suốt quá trình luyện tập và thi đấu
+- Đảm bảo hệ thống WiFi hoạt động ổn định, không nhiễu giữa các robot
+
+**Liên hệ:** Anh Tuan Le — Founder, VEX Technology Solutions
+
+---
+
+## Linh kiện mỗi robot
 
 | Linh kiện | Số lượng | Chức năng |
 |-----------|----------|-----------|
@@ -20,7 +41,7 @@
 
 ---
 
-## 🔌 Sơ đồ đấu nối
+## Sơ đồ đấu nối
 
 ### ESP32 → L298N #1 (Bên TRÁI)
 
@@ -63,7 +84,7 @@ Pin 18650 (2 viên nối tiếp = 7.4V)
 L298N #1 (5V output) ──→ ESP32 VIN (cấp nguồn cho ESP32)
 ```
 
-> ⚠️ **LƯU Ý**: Nhớ nối GND chung giữa ESP32 và cả 2 module L298N!
+> **LƯU Ý:** Nhớ nối GND chung giữa ESP32 và cả 2 module L298N.
 
 ### Sơ đồ tổng quan
 
@@ -94,7 +115,7 @@ L298N #1 (5V output) ──→ ESP32 VIN (cấp nguồn cho ESP32)
 
 ---
 
-## 💻 Cài đặt phần mềm
+## Cài đặt phần mềm
 
 ### 1. Cài Arduino IDE
 - Tải từ: https://www.arduino.cc/en/software
@@ -122,7 +143,7 @@ L298N #1 (5V output) ──→ ESP32 VIN (cấp nguồn cho ESP32)
 
 ---
 
-## 🚀 Cách sử dụng
+## Cách sử dụng
 
 ### Bước 1: Cấu hình Robot ID
 Mở file `robot_sumo_controller.ino`, đổi dòng:
@@ -150,7 +171,7 @@ Mở file `robot_sumo_controller.ino`, đổi dòng:
 
 ---
 
-## 📡 Chiến lược chống nhiễu WiFi (7 robot cùng lúc)
+## Chiến lược chống nhiễu WiFi
 
 | Robot | SSID | Kênh WiFi | Khoảng cách kênh |
 |-------|------|-----------|-------------------|
@@ -163,15 +184,15 @@ Mở file `robot_sumo_controller.ino`, đổi dòng:
 | 7 | SUMO_07 | 13 | +2 |
 
 **Các biện pháp chống nhiễu:**
-- ✅ Mỗi robot dùng kênh WiFi riêng, cách nhau 2 kênh
-- ✅ Giảm công suất phát WiFi (15dBm thay vì 20dBm)
-- ✅ Giới hạn 1 client kết nối mỗi robot
-- ✅ WebSocket gửi data nhỏ (~10 bytes/message)
-- ✅ Tần suất gửi 25Hz (đủ mượt, không quá tải)
+- Mỗi robot dùng kênh WiFi riêng, cách nhau 2 kênh
+- Giảm công suất phát WiFi (15dBm thay vì 20dBm)
+- Giới hạn 1 client kết nối mỗi robot
+- WebSocket gửi data nhỏ (~10 bytes/message)
+- Tần suất gửi 25Hz (đủ mượt, không quá tải)
 
 ---
 
-## 🔧 Xử lý sự cố
+## Xử lý sự cố
 
 | Vấn đề | Giải pháp |
 |--------|-----------|
@@ -184,22 +205,32 @@ Mở file `robot_sumo_controller.ino`, đổi dòng:
 
 ---
 
-## 📁 Cấu trúc dự án
+## Cấu trúc dự án
 
 ```
-robot-sumo-battle/
+robot_sumo_controller/
 ├── robot_sumo_controller/
-│   └── robot_sumo_controller.ino   ← Code chính (upload lên ESP32)
+│   ├── robot_sumo_controller.ino   ← Code chính (upload lên ESP32)
+│   └── web_interface.h             ← Giao diện điều khiển PS2-style
 ├── test_controller.html             ← Test joystick trên máy tính
-└── README.md                        ← File này
+├── LICENSE                          ← Giấy phép MIT
+└── README.md                        ← Tài liệu hướng dẫn
 ```
 
 ---
 
-## 🏆 Tips thi đấu
+## Tips thi đấu
 
 1. **Sạc đầy pin** trước mỗi trận
 2. **Test kết nối WiFi** trước khi vào sân
 3. **Giữ điện thoại gần robot** (< 10m) để giảm lag
 4. **Tắt mobile data** trên điện thoại khi điều khiển
 5. **Dùng trình duyệt Chrome** để tương thích tốt nhất
+
+---
+
+## Giấy phép
+
+Dự án được phân phối theo giấy phép [MIT License](LICENSE).
+
+Copyright (c) 2026 Anh Tuan Le — VEX Technology Solutions
