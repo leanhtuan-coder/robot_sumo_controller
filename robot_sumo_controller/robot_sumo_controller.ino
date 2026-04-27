@@ -27,36 +27,37 @@ const int WIFI_CHANNELS[] = {0, 1, 3, 5, 7, 9, 11, 13};
 //  CHÂN KẾT NỐI ESP32 -> L298N
 // ========================================
 //
-//  L298N #1 (TRÁI): ENA=25, IN1=26, IN2=27, ENB=14, IN3=13, IN4=5
-//  L298N #2 (PHẢI): ENA=32, IN1=33, IN2=23, ENB=19, IN3=18, IN4=4
+//  L298N #1 (DI CHUYỂN): ENA=25, IN1=26, IN2=27, ENB=14, IN3=13, IN4=5
+//  (Đấu song song 2 motor TRÁI vào OUT1/OUT2, 2 motor PHẢI vào OUT3/OUT4)
 //
-//  Xem README.md để biết sơ đồ đấu nối chi tiết.
+//  L298N #2 (VŨ KHÍ): ENA=32, IN1=33, IN2=23, ENB=19, IN3=18, IN4=4
+//  (Vũ khí 1 vào OUT1/OUT2, Vũ khí 2 vào OUT3/OUT4)
 
-// L298N #1 - Bên TRÁI
-#define LF_EN  25
-#define LF_IN1 26
-#define LF_IN2 27
-#define LR_EN  14
-#define LR_IN3 13
-#define LR_IN4  5
+// L298N #1 - DI CHUYỂN
+#define DRIVE_L_EN  25
+#define DRIVE_L_IN1 26
+#define DRIVE_L_IN2 27
+#define DRIVE_R_EN  14
+#define DRIVE_R_IN3 13
+#define DRIVE_R_IN4  5
 
-// L298N #2 - Bên PHẢI
-#define RF_EN  32
-#define RF_IN1 33
-#define RF_IN2 23
-#define RR_EN  19
-#define RR_IN3 18
-#define RR_IN4  4
+// L298N #2 - VŨ KHÍ
+#define WEAPON1_EN  32
+#define WEAPON1_IN1 33
+#define WEAPON1_IN2 23
+#define WEAPON2_EN  19
+#define WEAPON2_IN3 18
+#define WEAPON2_IN4  4
 
 // PWM
 #define PWM_FREQ 5000
 #define PWM_RES  8
 
 // LEDC channels
-#define CH_LF 0
-#define CH_LR 1
-#define CH_RF 2
-#define CH_RR 3
+#define CH_DRIVE_L 0
+#define CH_DRIVE_R 1
+#define CH_WEAPON1 2
+#define CH_WEAPON2 3
 
 // ========================================
 //  BIẾN TOÀN CỤC
@@ -69,6 +70,8 @@ bool ramMode   = false;   // △ Lướt tới
 bool spinLeft  = false;   // □ Xoay trái
 bool spinRight = false;   // ○ Xoay phải
 bool boostMode = false;   // R2 Turbo
+bool weapon1Active = false; // L1 Vũ khí 1
+bool weapon2Active = false; // R1 Vũ khí 2
 
 unsigned long lastCmdTime = 0;
 #define CMD_TIMEOUT 500
@@ -87,41 +90,53 @@ uint8_t activeClient = 255; // 255 = không có ai
 // ========================================
 
 void setupMotors() {
-  int pins[] = {LF_IN1, LF_IN2, LR_IN3, LR_IN4,
-                RF_IN1, RF_IN2, RR_IN3, RR_IN4};
+  int pins[] = {DRIVE_L_IN1, DRIVE_L_IN2, DRIVE_R_IN3, DRIVE_R_IN4,
+                WEAPON1_IN1, WEAPON1_IN2, WEAPON2_IN3, WEAPON2_IN4};
   for (int i = 0; i < 8; i++) {
     pinMode(pins[i], OUTPUT);
     digitalWrite(pins[i], LOW);
   }
-  ledcSetup(CH_LF, PWM_FREQ, PWM_RES); ledcAttachPin(LF_EN, CH_LF);
-  ledcSetup(CH_LR, PWM_FREQ, PWM_RES); ledcAttachPin(LR_EN, CH_LR);
-  ledcSetup(CH_RF, PWM_FREQ, PWM_RES); ledcAttachPin(RF_EN, CH_RF);
-  ledcSetup(CH_RR, PWM_FREQ, PWM_RES); ledcAttachPin(RR_EN, CH_RR);
+  ledcSetup(CH_DRIVE_L, PWM_FREQ, PWM_RES); ledcAttachPin(DRIVE_L_EN, CH_DRIVE_L);
+  ledcSetup(CH_DRIVE_R, PWM_FREQ, PWM_RES); ledcAttachPin(DRIVE_R_EN, CH_DRIVE_R);
+  ledcSetup(CH_WEAPON1, PWM_FREQ, PWM_RES); ledcAttachPin(WEAPON1_EN, CH_WEAPON1);
+  ledcSetup(CH_WEAPON2, PWM_FREQ, PWM_RES); ledcAttachPin(WEAPON2_EN, CH_WEAPON2);
 }
 
 void setLeftMotors(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
-  digitalWrite(LF_IN1, fwd); digitalWrite(LF_IN2, !fwd);
-  digitalWrite(LR_IN3, fwd); digitalWrite(LR_IN4, !fwd);
-  ledcWrite(CH_LF, pwm);     ledcWrite(CH_LR, pwm);
+  digitalWrite(DRIVE_L_IN1, fwd); digitalWrite(DRIVE_L_IN2, !fwd);
+  ledcWrite(CH_DRIVE_L, pwm);
 }
 
 void setRightMotors(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
-  digitalWrite(RF_IN1, fwd); digitalWrite(RF_IN2, !fwd);
-  digitalWrite(RR_IN3, fwd); digitalWrite(RR_IN4, !fwd);
-  ledcWrite(CH_RF, pwm);     ledcWrite(CH_RR, pwm);
+  digitalWrite(DRIVE_R_IN3, fwd); digitalWrite(DRIVE_R_IN4, !fwd);
+  ledcWrite(CH_DRIVE_R, pwm);
+}
+
+void setWeapon1(int speed) {
+  bool fwd = (speed >= 0);
+  int pwm = constrain(abs(speed), 0, 255);
+  digitalWrite(WEAPON1_IN1, fwd); digitalWrite(WEAPON1_IN2, !fwd);
+  ledcWrite(CH_WEAPON1, pwm);
+}
+
+void setWeapon2(int speed) {
+  bool fwd = (speed >= 0);
+  int pwm = constrain(abs(speed), 0, 255);
+  digitalWrite(WEAPON2_IN3, fwd); digitalWrite(WEAPON2_IN4, !fwd);
+  ledcWrite(CH_WEAPON2, pwm);
 }
 
 void stopAll() {
-  ledcWrite(CH_LF, 0); ledcWrite(CH_LR, 0);
-  ledcWrite(CH_RF, 0); ledcWrite(CH_RR, 0);
-  digitalWrite(LF_IN1, LOW); digitalWrite(LF_IN2, LOW);
-  digitalWrite(LR_IN3, LOW); digitalWrite(LR_IN4, LOW);
-  digitalWrite(RF_IN1, LOW); digitalWrite(RF_IN2, LOW);
-  digitalWrite(RR_IN3, LOW); digitalWrite(RR_IN4, LOW);
+  ledcWrite(CH_DRIVE_L, 0); ledcWrite(CH_DRIVE_R, 0);
+  ledcWrite(CH_WEAPON1, 0); ledcWrite(CH_WEAPON2, 0);
+  digitalWrite(DRIVE_L_IN1, LOW); digitalWrite(DRIVE_L_IN2, LOW);
+  digitalWrite(DRIVE_R_IN3, LOW); digitalWrite(DRIVE_R_IN4, LOW);
+  digitalWrite(WEAPON1_IN1, LOW); digitalWrite(WEAPON1_IN2, LOW);
+  digitalWrite(WEAPON2_IN3, LOW); digitalWrite(WEAPON2_IN4, LOW);
 }
 
 // Arcade drive: joystick (x,y) -> motor trái/phải
@@ -175,6 +190,13 @@ void processCommand() {
 
   setLeftMotors(leftPWM);
   setRightMotors(rightPWM);
+  
+  if (weapon1Active) setWeapon1(255);
+  else setWeapon1(0);
+
+  if (weapon2Active) setWeapon2(255);
+  else setWeapon2(0);
+
   sendMotorState(leftPWM, rightPWM);
 }
 
@@ -188,6 +210,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length)
       Serial.printf("[WS] Client #%u ngắt\n", num);
       stopAll();
       ramMode = spinLeft = spinRight = boostMode = false;
+      weapon1Active = weapon2Active = false;
       joyX = joyY = 0;
       activeClient = 255;
       break;
@@ -212,6 +235,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length)
         stopAll();
         joyX = joyY = 0;
         ramMode = spinLeft = spinRight = boostMode = false;
+        weapon1Active = weapon2Active = false;
         sendMotorState(0, 0);
         return;
       }
@@ -237,14 +261,17 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length)
         else if (btn == "SQR") spinLeft = pressed;   // □ Xoay trái
         else if (btn == "CIR") spinRight = pressed;  // ○ Xoay phải
         else if (btn == "R2")  boostMode = pressed;  // R2 Turbo
+        else if (btn == "L1")  weapon1Active = pressed; // L1 Vũ khí 1
+        else if (btn == "R1")  weapon2Active = pressed; // R1 Vũ khí 2
         else if (btn == "CRS" && pressed) {          // ✕ Dừng
           stopAll();
           joyX = joyY = 0;
           ramMode = spinLeft = spinRight = boostMode = false;
+          weapon1Active = weapon2Active = false;
           sendMotorState(0, 0);
           return;
         }
-        // L1, L2, R1: dự phòng (chưa gán chức năng)
+        // L2, R2 (nửa nút trên/dưới): dự phòng khác.
 
         processCommand();
         return;
@@ -301,10 +328,11 @@ void loop() {
 
   // Safety timeout
   if (millis() - lastCmdTime > CMD_TIMEOUT && lastCmdTime > 0) {
-    if (joyX != 0 || joyY != 0 || ramMode || spinLeft || spinRight || boostMode) {
+    if (joyX != 0 || joyY != 0 || ramMode || spinLeft || spinRight || boostMode || weapon1Active || weapon2Active) {
       stopAll();
       joyX = joyY = 0;
       ramMode = spinLeft = spinRight = boostMode = false;
+      weapon1Active = weapon2Active = false;
       sendMotorState(0, 0);
       Serial.println("[SAFETY] Timeout - dừng motor");
     }
