@@ -53,11 +53,7 @@ const int WIFI_CHANNELS[] = {0, 1, 3, 5, 7, 9, 11, 13};
 #define PWM_FREQ 5000
 #define PWM_RES  8
 
-// LEDC channels
-#define CH_DRIVE_L 0
-#define CH_DRIVE_R 1
-#define CH_WEAPON1 2
-#define CH_WEAPON2 3
+// (ESP32 Core 3.x: không cần khai báo channel, dùng trực tiếp GPIO pin)
 
 // ========================================
 //  BIẾN TOÀN CỤC
@@ -96,43 +92,43 @@ void setupMotors() {
     pinMode(pins[i], OUTPUT);
     digitalWrite(pins[i], LOW);
   }
-  ledcSetup(CH_DRIVE_L, PWM_FREQ, PWM_RES); ledcAttachPin(DRIVE_L_EN, CH_DRIVE_L);
-  ledcSetup(CH_DRIVE_R, PWM_FREQ, PWM_RES); ledcAttachPin(DRIVE_R_EN, CH_DRIVE_R);
-  ledcSetup(CH_WEAPON1, PWM_FREQ, PWM_RES); ledcAttachPin(WEAPON1_EN, CH_WEAPON1);
-  ledcSetup(CH_WEAPON2, PWM_FREQ, PWM_RES); ledcAttachPin(WEAPON2_EN, CH_WEAPON2);
+  ledcAttach(DRIVE_L_EN, PWM_FREQ, PWM_RES);
+  ledcAttach(DRIVE_R_EN, PWM_FREQ, PWM_RES);
+  ledcAttach(WEAPON1_EN, PWM_FREQ, PWM_RES);
+  ledcAttach(WEAPON2_EN, PWM_FREQ, PWM_RES);
 }
 
 void setLeftMotors(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
   digitalWrite(DRIVE_L_IN1, fwd); digitalWrite(DRIVE_L_IN2, !fwd);
-  ledcWrite(CH_DRIVE_L, pwm);
+  ledcWrite(DRIVE_L_EN, pwm);
 }
 
 void setRightMotors(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
   digitalWrite(DRIVE_R_IN3, fwd); digitalWrite(DRIVE_R_IN4, !fwd);
-  ledcWrite(CH_DRIVE_R, pwm);
+  ledcWrite(DRIVE_R_EN, pwm);
 }
 
 void setWeapon1(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
   digitalWrite(WEAPON1_IN1, fwd); digitalWrite(WEAPON1_IN2, !fwd);
-  ledcWrite(CH_WEAPON1, pwm);
+  ledcWrite(WEAPON1_EN, pwm);
 }
 
 void setWeapon2(int speed) {
   bool fwd = (speed >= 0);
   int pwm = constrain(abs(speed), 0, 255);
   digitalWrite(WEAPON2_IN3, fwd); digitalWrite(WEAPON2_IN4, !fwd);
-  ledcWrite(CH_WEAPON2, pwm);
+  ledcWrite(WEAPON2_EN, pwm);
 }
 
 void stopAll() {
-  ledcWrite(CH_DRIVE_L, 0); ledcWrite(CH_DRIVE_R, 0);
-  ledcWrite(CH_WEAPON1, 0); ledcWrite(CH_WEAPON2, 0);
+  ledcWrite(DRIVE_L_EN, 0); ledcWrite(DRIVE_R_EN, 0);
+  ledcWrite(WEAPON1_EN, 0); ledcWrite(WEAPON2_EN, 0);
   digitalWrite(DRIVE_L_IN1, LOW); digitalWrite(DRIVE_L_IN2, LOW);
   digitalWrite(DRIVE_R_IN3, LOW); digitalWrite(DRIVE_R_IN4, LOW);
   digitalWrite(WEAPON1_IN1, LOW); digitalWrite(WEAPON1_IN2, LOW);
